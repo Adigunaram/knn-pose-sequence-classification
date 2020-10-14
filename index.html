@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/0.9.0/p5.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/0.9.0/addons/p5.dom.min.js"></script>
+    <script src="src/ml5.min.js"></script>
+    <link
+      rel="stylesheet"
+      href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"
+      integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm"
+      crossorigin="anonymous"
+    />
+    <title>Posenet KNN Classifier</title>
+  </head>
+  <body>
+    <div class="container">
+      <div class="row">
+        <div class="col">
+          <div id="status"></div>
+          <div id="videoContainer"></div>
+          <div id="container"></div>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-6">
+          <!-- Button A -->
+          <div class="form-group">
+            <button id="addClassA" class="btn btn-primary">
+              Add an Example to Class A
+            </button>
+            <button id="resetA" class="btn btn-warning">Reset Class A</button>
+            <small class="form-text text-muted">
+              <span id="exampleA">0</span>&nbspA examples |
+              <span id="confidenceA">0</span>% Confidence A
+            </small>
+          </div>
+          <!-- Button B -->
+          <div class="form-group">
+            <button id="addClassB" class="btn btn-primary">
+              Add an Example to Class B
+            </button>
+            <button id="resetB" class="btn btn-warning">Reset Class B</button>
+            <small class="form-text text-muted">
+              <span id="exampleB">0</span>&nbspB examples |
+              <span id="confidenceB">0</span>% Confidence B
+            </small>
+          </div>
+          <!-- Button C -->
+          <div class="form-group">
+            <button id="addClassC" class="btn btn-primary">
+              Add an Example to Class C
+            </button>
+            <button id="resetC" class="btn btn-warning">Reset Class C</button>
+            <small class="form-text text-muted">
+              <span id="exampleC">0</span>&nbspC examples |
+              <span id="confidenceC">0</span>% Confidence C
+            </small>
+          </div>
+          <!-- Button D -->
+          <div class="form-group">
+            <button id="addClassD" class="btn btn-primary">
+              Add an Example to Class D
+            </button>
+            <button id="resetD" class="btn btn-warning">Reset Class D</button>
+            <small class="form-text text-muted">
+              <span id="exampleD">0</span>&nbspD examples |
+              <span id="confidenceD">0</span>% Confidence D
+            </small>
+          </div>
+          <!-- Etc Button -->
+          <div class="form-group">
+            <div class="btn-group" role="group">
+              <button type="button" class="btn btn-primary" id="btnPredict">
+                Predict
+              </button>
+              <button type="button" class="btn btn-danger" id="clearExample">
+                Clear Example
+              </button>
+            </div>
+            <div class="btn-group" role="group">
+              <button type="button" class="btn btn-success" id="saveDataset">
+                Save Dataset
+              </button>
+              <button type="button" class="btn btn-info" id="loadDataset">
+                Load Dataset
+              </button>
+            </div>
+          </div>
+        </div>
+        <div class="col-6">test</div>
+      </div>
+    </div>
+  </body>
+  <script src="src/sketch.js"></script>
+</html>
