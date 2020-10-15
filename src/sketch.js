@@ -5,6 +5,13 @@ let poseNet;
 let poses = [];
 let classificationResult = "";
 let allowedToPredict = false;
+let isAllowedPredict = true;
+
+function timeout(time) {
+  return new Promise((r) => {
+    setTimeout(r, time);
+  });
+}
 
 function setup() {
   const canvas = createCanvas(460, 380);
@@ -69,6 +76,7 @@ function drawSkeleton() {
       let partA = skeleton[j][0];
       let partB = skeleton[j][1];
       stroke(255, 0, 0);
+      strokeWeight(4);
       line(
         partA.position.x,
         partA.position.y,
@@ -85,7 +93,7 @@ function clearAllLabels() {
   updateCounts();
 }
 
-// Predict
+// Classify
 function classify() {
   // Get the total number of labels from knnClassifier
   const numLabels = knnClassifier.getNumLabels();
@@ -106,16 +114,41 @@ function classify() {
   allowedToPredict = true;
 }
 
+// Show the results
+async function gotResults(err, result) {
+  // Display any error
+  if (err) {
+    console.error(err);
+  }
+
+  if (isAllowedPredict) {
+    if (result.confidencesByLabel) {
+      const confidences = result.confidencesByLabel;
+
+      if (result.label) {
+        classificationResult = result.label;
+        console.log(classificationResult);
+        isAllowedPredict = false;
+      }
+    }
+  } else {
+    console.log("Sleeping for 3 seconds");
+    await timeout(3000);
+    isAllowedPredict = true;
+  }
+
+  if (poses.length > 0) {
+    classify();
+  }
+}
+
 // Save dataset as myKNNDataset.json
 function saveDataset() {
   knnClassifier.save("myKNN");
 }
 // Load dataset to the classifier
 function loadDataset() {
-  knnClassifier.load(
-    "https://api.npoint.io/8660365ab3ebd80cb2b9",
-    updateCounts
-  );
+  knnClassifier.load("knn-dataset.json", updateCounts);
 }
 
 // Add example
@@ -142,10 +175,11 @@ function updateCounts() {
   select("#exampleB").html(counts["B"] || 0);
   select("#exampleC").html(counts["C"] || 0);
   select("#exampleD").html(counts["D"] || 0);
+  select("#exampleIdle").html(counts["Idle"] || 0);
 }
 
 function createButtons() {
-  let btnClass = ["A", "B", "C", "D"];
+  let btnClass = ["A", "B", "C", "D", "Idle"];
 
   for (let i = 0; i < btnClass.length; i++) {
     createBtn(btnClass[i]);
