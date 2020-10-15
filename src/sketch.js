@@ -7,6 +7,11 @@ let classificationResult = "";
 let allowedToPredict = false;
 let isAllowedPredict = true;
 
+let sequenceOne = [];
+let sequenceTwo = [];
+let sequenceThree = [];
+let sequenceFour = [];
+
 function timeout(time) {
   return new Promise((r) => {
     setTimeout(r, time);
@@ -200,6 +205,41 @@ function createButtons() {
   // Get classifier dataset
   buttonGetData = select("#saveDataset");
   buttonGetData.mousePressed(saveDataset);
+
+  buttonAddPoseToSequence = select("#btnAddPoseToSequence");
+  buttonAddPoseToSequence.mousePressed(addPoseToSequence);
+}
+
+function addPoseToSequence() {
+  const pose = select("#selectPose");
+  const sequence = select("#selectSequence");
+  addToListSequence(pose.value(), sequence.value());
+}
+
+function addToListSequence(pose, sequence) {
+  if (sequence == "sequenceOne") {
+    append(sequenceOne, pose);
+    updateSequenceHTML(sequence, sequenceOne);
+  } else if (sequence == "sequenceTwo") {
+    append(sequenceTwo, pose);
+    updateSequenceHTML(sequence, sequenceTwo);
+  } else if (sequence == "sequenceThree") {
+    append(sequenceThree, pose);
+    updateSequenceHTML(sequence, sequenceThree);
+  } else if (sequence == "sequenceFour") {
+    append(sequenceFour, pose);
+    updateSequenceHTML(sequence, sequenceFour);
+  }
+}
+
+function capitalizeFirstLetter(string) {
+  return string.charAt(0).toUpperCase() + string.slice(1);
+}
+
+function updateSequenceHTML(sequence, array) {
+  let capitalSequence = capitalizeFirstLetter(sequence);
+  let liText = select(`#list${capitalSequence}`);
+  liText.html(array);
 }
 
 function createBtn(label) {
