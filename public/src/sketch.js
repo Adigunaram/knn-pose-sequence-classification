@@ -70,6 +70,21 @@ function draw() {
   drawSkeleton();
   fill(0, 255, 0);
   textSize(64);
+
+  if (classificationResult == "A") {
+    text("A", width / 2, height / 2);
+  } else if (classificationResult == "B") {
+    text("B", width / 2, height / 2);
+  } else if (classificationResult == "C") {
+    text("C", width / 2, height / 2);
+  } else if (classificationResult == "D") {
+    text("D", width / 2, height / 2);
+  } else if (classificationResult == "Idle") {
+    image(video, 0, 0, width, height);
+    drawKeypoints();
+    drawSkeleton();
+    fill(0, 255, 0);
+  }
 }
 
 // A function to draw ellipses over the detected keypoints
@@ -146,10 +161,11 @@ async function gotResults(err, result) {
     console.error(err);
   }
 
-  if (result.label != "Idle") {
+  if (result.label) {
     if (isAllowedPredict) {
       if (result.confidencesByLabel) {
-        // const confidences = result.confidencesByLabel;
+        classificationResult = result.label;
+        const confidences = result.confidencesByLabel;
         // console.log(confidences);
 
         if (result.label) {
@@ -158,6 +174,22 @@ async function gotResults(err, result) {
           appendSequence(classificationResult);
           isAllowedPredict = false;
         }
+
+        select("#confidenceA").html(
+          `${confidences["A"] ? confidences["A"] * 100 : 0}`
+        );
+        select("#confidenceB").html(
+          `${confidences["B"] ? confidences["B"] * 100 : 0}`
+        );
+        select("#confidenceC").html(
+          `${confidences["C"] ? confidences["C"] * 100 : 0}`
+        );
+        select("#confidenceD").html(
+          `${confidences["D"] ? confidences["D"] * 100 : 0}`
+        );
+        select("#confidenceIdle").html(
+          `${confidences["Idle"] ? confidences["Idle"] * 100 : 0}`
+        );
       }
     } else {
       console.log("Sleeping for 3 seconds");
