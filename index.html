@@ -12,6 +12,11 @@
       integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm"
       crossorigin="anonymous"
     />
+    <script
+      src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.0/FileSaver.min.js"
+      integrity="sha512-csNcFYJniKjJxRWRV1R7fvnXrycHP6qDR21mgz1ZP55xY5d+aHLfo9/FcGDQLfn2IfngbAHd8LdfsagcCqgTcQ=="
+      crossorigin="anonymous"
+    ></script>
     <title>Posenet KNN Classifier</title>
   </head>
   <body>
@@ -26,21 +31,21 @@
       <div class="row">
         <div class="col-6">
           <!-- Button A -->
+          <label for="" class="h5">Class A</label>
           <div class="form-group">
-            <button id="addClassA" class="btn btn-primary">
-              Add Example Class A
-            </button>
-            <button id="resetA" class="btn btn-warning">Reset Class A</button>
+            <button id="startClassA" class="btn btn-success">Start</button>
+            <button id="stopClassA" class="btn btn-danger">Stop</button>
+            <button id="resetA" class="btn btn-warning">Reset</button>
             <small class="form-text text-muted">
               <span id="exampleA">0</span>&nbspA examples |
               <span id="confidenceA">0</span>% Confidence A
             </small>
           </div>
           <!-- Button B -->
+          <label for="" class="h5">Class B</label>
           <div class="form-group">
-            <button id="addClassB" class="btn btn-primary">
-              Add Example Class B
-            </button>
+            <button id="startClassB" class="btn btn-success">Start</button>
+            <button id="stopClassB" class="btn btn-danger">Stop</button>
             <button id="resetB" class="btn btn-warning">Reset Class B</button>
             <small class="form-text text-muted">
               <span id="exampleB">0</span>&nbspB examples |
@@ -48,10 +53,10 @@
             </small>
           </div>
           <!-- Button C -->
+          <label for="" class="h5">Class C</label>
           <div class="form-group">
-            <button id="addClassC" class="btn btn-primary">
-              Add Example Class C
-            </button>
+            <button id="startClassC" class="btn btn-success">Start</button>
+            <button id="stopClassC" class="btn btn-danger">Stop</button>
             <button id="resetC" class="btn btn-warning">Reset Class C</button>
             <small class="form-text text-muted">
               <span id="exampleC">0</span>&nbspC examples |
@@ -59,10 +64,10 @@
             </small>
           </div>
           <!-- Button D -->
+          <label for="" class="h5">Class D</label>
           <div class="form-group">
-            <button id="addClassD" class="btn btn-primary">
-              Add Example Class D
-            </button>
+            <button id="startClassD" class="btn btn-success">Start</button>
+            <button id="stopClassD" class="btn btn-danger">Stop</button>
             <button id="resetD" class="btn btn-warning">Reset Class D</button>
             <small class="form-text text-muted">
               <span id="exampleD">0</span>&nbspD examples |
@@ -70,10 +75,10 @@
             </small>
           </div>
           <!-- Button Idle -->
+          <label for="" class="h5">Class Idle</label>
           <div class="form-group">
-            <button id="addClassIdle" class="btn btn-primary">
-              Add Example Class Idle
-            </button>
+            <button id="startClassIdle" class="btn btn-success">Start</button>
+            <button id="stopClassIdle" class="btn btn-danger">Stop</button>
             <button id="resetIdle" class="btn btn-warning">
               Reset Class Idle
             </button>

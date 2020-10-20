@@ -12,6 +12,26 @@ let sequenceTwo = [];
 let sequenceThree = [];
 let sequenceFour = [];
 
+let doSequence = [];
+
+let isTrainingClass = {
+  classA: {
+    isTraining: false,
+  },
+  classB: {
+    isTraining: false,
+  },
+  classC: {
+    isTraining: false,
+  },
+  classD: {
+    isTraining: false,
+  },
+  classIdle: {
+    isTraining: false,
+  },
+};
+
 function timeout(time) {
   return new Promise((r) => {
     setTimeout(r, time);
@@ -126,25 +146,51 @@ async function gotResults(err, result) {
     console.error(err);
   }
 
-  if (isAllowedPredict) {
-    if (result.confidencesByLabel) {
-      const confidences = result.confidencesByLabel;
+  if (result.label != "Idle") {
+    if (isAllowedPredict) {
+      if (result.confidencesByLabel) {
+        // const confidences = result.confidencesByLabel;
+        // console.log(confidences);
 
-      if (result.label) {
-        classificationResult = result.label;
-        console.log(classificationResult);
-        isAllowedPredict = false;
+        if (result.label) {
+          classificationResult = result.label;
+          console.log(classificationResult);
+          appendSequence(classificationResult);
+          isAllowedPredict = false;
+        }
       }
+    } else {
+      console.log("Sleeping for 3 seconds");
+      await timeout(3000);
+      isAllowedPredict = true;
     }
-  } else {
-    console.log("Sleeping for 3 seconds");
-    await timeout(3000);
-    isAllowedPredict = true;
   }
 
   if (poses.length > 0) {
     classify();
   }
+}
+
+function appendSequence(pose) {
+  append(doSequence, pose);
+  if (doSequence.length == 2) {
+    console.log("Udah dua nih, saatnya ngecek sequence yang lain");
+    let isSequenceOne = compareSequence(doSequence, sequenceOne);
+    let isSequenceTwo = compareSequence(doSequence, sequenceTwo);
+    let isSequenceThree = compareSequence(doSequence, sequenceThree);
+    let isSequenceFour = compareSequence(doSequence, sequenceFour);
+    console.log(isSequenceOne, isSequenceTwo, isSequenceThree, isSequenceFour);
+    doSequence = [];
+  }
+}
+
+function compareSequence(a, b) {
+  return (
+    Array.isArray(a) &&
+    Array.isArray(b) &&
+    a.length === b.length &&
+    a.every((val, index) => val === b[index])
+  );
 }
 
 // Save dataset as myKNNDataset.json
@@ -153,7 +199,7 @@ function saveDataset() {
 }
 // Load dataset to the classifier
 function loadDataset() {
-  knnClassifier.load("knn-dataset.json", updateCounts);
+  knnClassifier.load("./myKNN.json", updateCounts);
 }
 
 // Add example
@@ -210,6 +256,75 @@ function createButtons() {
   buttonAddPoseToSequence.mousePressed(addPoseToSequence);
 }
 
+function isTraining(label, condition) {
+  switch (label) {
+    case "A":
+      isTrainingClass.classA.isTraining = condition;
+      logTrainingText();
+      loopTraining(label);
+      break;
+
+    case "B":
+      isTrainingClass.classB.isTraining = condition;
+      logTrainingText();
+      loopTraining(label);
+      break;
+
+    case "C":
+      isTrainingClass.classC.isTraining = condition;
+      logTrainingText();
+      loopTraining(label);
+      break;
+
+    case "D":
+      isTrainingClass.classD.isTraining = condition;
+      logTrainingText();
+      loopTraining(label);
+      break;
+
+    case "Idle":
+      isTrainingClass.classIdle.isTraining = condition;
+      logTrainingText();
+      loopTraining(label);
+      break;
+  }
+}
+
+function logTrainingText() {
+  console.log(isTrainingClass);
+}
+
+async function loopTraining(label) {
+  console.log(`Training ${label}`);
+  switch (label) {
+    case "A":
+      while (isTrainingClass.classA.isTraining) {
+        addExample(label);
+        await timeout(1000);
+      }
+    case "B":
+      while (isTrainingClass.classB.isTraining) {
+        addExample(label);
+        await timeout(1000);
+      }
+    case "C":
+      while (isTrainingClass.classC.isTraining) {
+        addExample(label);
+        await timeout(1000);
+      }
+    case "D":
+      while (isTrainingClass.classD.isTraining) {
+        addExample(label);
+        await timeout(1000);
+      }
+    case "Idle":
+      while (isTrainingClass.classIdle.isTraining) {
+        addExample(label);
+        await timeout(1000);
+      }
+  }
+}
+
 function addPoseToSequence() {
   const pose = select("#selectPose");
   const sequence = select("#selectSequence");
@@ -243,11 +358,23 @@ function updateSequenceHTML(sequence, array) {
 }
 
 function createBtn(label) {
-  const btnAdd = document.getElementById(`addClass${label}`);
+  const btnStart = document.getElementById(`startClass${label}`);
+  const btnStop = document.getElementById(`stopClass${label}`);
   const btnReset = document.getElementById(`reset${label}`);
 
-  btnAdd.addEventListener("click", () => {
-    addExample(label);
+  btnStop.disabled = true;
+
+  btnStart.addEventListener("click", () => {
+    console.log(label);
+    btnStart.disabled = true;
+    btnStop.disabled = false;
+    isTraining(label, true);
+  });
+
+  btnStop.addEventListener("click", () => {
+    btnStart.disabled = false;
+    btnStop.disabled = true;
+    isTraining(label, false);
   });
 
   btnReset.addEventListener("click", () => {
