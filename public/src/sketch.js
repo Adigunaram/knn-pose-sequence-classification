@@ -14,6 +14,8 @@ let sequenceFour = [];
 
 let doSequence = [];
 
+let baseUrl = "http://localhost:8080/receive";
+
 let isTrainingClass = {
   classA: {
     isTraining: false,
@@ -192,8 +194,8 @@ async function gotResults(err, result) {
         );
       }
     } else {
-      console.log("Sleeping for 3 seconds");
-      await timeout(3000);
+      console.log("Sleeping for 1 seconds");
+      await timeout(1000);
       isAllowedPredict = true;
     }
   }
@@ -332,27 +334,27 @@ async function loopTraining(label) {
     case "A":
       while (isTrainingClass.classA.isTraining) {
         addExample(label);
-        await timeout(1000);
+        await timeout(500);
       }
     case "B":
       while (isTrainingClass.classB.isTraining) {
         addExample(label);
-        await timeout(1000);
+        await timeout(500);
       }
     case "C":
       while (isTrainingClass.classC.isTraining) {
         addExample(label);
-        await timeout(1000);
+        await timeout(500);
       }
     case "D":
       while (isTrainingClass.classD.isTraining) {
         addExample(label);
-        await timeout(1000);
+        await timeout(500);
       }
     case "Idle":
       while (isTrainingClass.classIdle.isTraining) {
         addExample(label);
-        await timeout(1000);
+        await timeout(500);
       }
   }
 }
@@ -410,6 +412,11 @@ function createBtn(label) {
   });
 
   btnReset.addEventListener("click", () => {
-    clearLabel(label);
+    let postData = { id: 1, name: "Sam", email: "sam@samcorp.com" };
+
+    httpPost(baseUrl, "json", postData, function (response) {
+      console.log(response);
+    });
+    // clearLabel(label);
   });
 }
