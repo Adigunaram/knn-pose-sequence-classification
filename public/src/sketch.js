@@ -237,7 +237,11 @@ function loadDataset() {
 }
 
 // Add example
-function addExample(label) {
+async function addExample(label) {
+
+  // Save Image
+  await captureCanvas();
+
   // Convert poses results to a 2d array [[score0, x0, y0],...,[score16, x16, y16]]
   const poseArray = poses[0].pose.keypoints.map((p) => [
     p.score,
@@ -333,27 +337,27 @@ async function loopTraining(label) {
   switch (label) {
     case "A":
       while (isTrainingClass.classA.isTraining) {
-        addExample(label);
+        await addExample(label);
         await timeout(500);
       }
     case "B":
       while (isTrainingClass.classB.isTraining) {
-        addExample(label);
+        await addExample(label);
         await timeout(500);
       }
     case "C":
       while (isTrainingClass.classC.isTraining) {
-        addExample(label);
+        await addExample(label);
         await timeout(500);
       }
     case "D":
       while (isTrainingClass.classD.isTraining) {
-        addExample(label);
+        await addExample(label);
         await timeout(500);
       }
     case "Idle":
       while (isTrainingClass.classIdle.isTraining) {
-        addExample(label);
+        await addExample(label);
         await timeout(500);
       }
   }
@@ -418,5 +422,15 @@ function createBtn(label) {
       console.log(response);
     });
     // clearLabel(label);
+  });
+}
+
+async function captureCanvas() {
+  var canvas = document.getElementById("defaultCanvas0");
+  var base64 = canvas.toDataURL();
+  await fetch("/upload", { 
+    method: "POST", 
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ base64 })
   });
 }
