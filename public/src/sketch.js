@@ -175,7 +175,7 @@ async function gotResults(err, result) {
         if (result.label) {
           classificationResult = result.label;
           console.log(classificationResult);
-          appendSequence(classificationResult);
+          await appendSequence(classificationResult);
           isAllowedPredict = false;
         }
 
@@ -207,7 +207,7 @@ async function gotResults(err, result) {
   }
 }
 
-function appendSequence(pose) {
+async function appendSequence(pose) {
   append(doSequence, pose);
   if (doSequence.length == 2) {
     console.log("Udah dua nih, saatnya ngecek sequence yang lain");
@@ -215,8 +215,14 @@ function appendSequence(pose) {
     let isSequenceTwo = compareSequence(doSequence, sequenceTwo);
     let isSequenceThree = compareSequence(doSequence, sequenceThree);
     let isSequenceFour = compareSequence(doSequence, sequenceFour);
-    console.log(isSequenceOne, isSequenceTwo, isSequenceThree, isSequenceFour);
     doSequence = [];
+    
+    /** publish to mqtt */
+    await fetch("/publish", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ isSequenceOne, isSequenceTwo, isSequenceThree, isSequenceFour })
+    })
   }
 }
 

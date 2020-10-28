@@ -3,6 +3,7 @@ const morgan = require("morgan");
 const bodyParser = require("body-parser");
 const multer = require("multer");
 const path = require("path");
+const mqtt = require('mqtt')
 
 const DEFAULT_PORT = 8080;
 
@@ -17,11 +18,12 @@ const STORAGE = multer.diskStorage({
 
 /** Main */
 (() => {
+  const client  = mqtt.connect('mqtt://127.0.0.1:1883')
   const app = express();
 
   app.use(express.static("public"));
   app.use(bodyParser.json());
-  app.use(morgan("combined"));
+  app.use(morgan("tiny"));
 
   /** serve client */
   app.get("/", (req, res) => {
@@ -35,6 +37,17 @@ const STORAGE = multer.diskStorage({
     } catch (error) {
       return res.status(500).json({ message: error.message })
     }
+  });
+
+  /** publish to mqtt serverr */
+  app.post("/publish", async (req, res) => {
+    const payload = JSON.stringify(req.body);
+    
+    await client.publish("predict", payload)
+    
+    return res.status(200).json({
+      message: "published"
+    })
   });
   
   /** listen http */
