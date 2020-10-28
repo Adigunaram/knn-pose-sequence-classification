@@ -14,6 +14,8 @@ let sequenceFour = [];
 
 let doSequence = [];
 
+var TIMEOUT = 1000;
+
 let baseUrl = "http://localhost:8080/receive";
 
 let isTrainingClass = {
@@ -338,27 +340,27 @@ async function loopTraining(label) {
     case "A":
       while (isTrainingClass.classA.isTraining) {
         await addExample(label);
-        await timeout(500);
+        await timeout(TIMEOUT);
       }
     case "B":
       while (isTrainingClass.classB.isTraining) {
         await addExample(label);
-        await timeout(500);
+        await timeout(TIMEOUT);
       }
     case "C":
       while (isTrainingClass.classC.isTraining) {
         await addExample(label);
-        await timeout(500);
+        await timeout(TIMEOUT);
       }
     case "D":
       while (isTrainingClass.classD.isTraining) {
         await addExample(label);
-        await timeout(500);
+        await timeout(TIMEOUT);
       }
     case "Idle":
       while (isTrainingClass.classIdle.isTraining) {
         await addExample(label);
-        await timeout(500);
+        await timeout(TIMEOUT);
       }
   }
 }
@@ -425,12 +427,20 @@ function createBtn(label) {
   });
 }
 
-async function captureCanvas() {
+async function captureCanvas(filename = "train_canvas.png") {
   var canvas = document.getElementById("defaultCanvas0");
   var base64 = canvas.toDataURL();
-  await fetch("/upload", { 
-    method: "POST", 
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ base64 })
-  });
+  
+  await fetch(base64)
+    .then(res => res.blob())
+    .then(blob => {
+      const formData = new FormData();
+      const file = new File([blob], filename);
+      formData.append('canvas', file)
+
+      return fetch("/upload", { 
+        method: "POST", 
+        body: formData
+      });
+    });
 }
