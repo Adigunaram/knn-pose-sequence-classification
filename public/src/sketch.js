@@ -14,7 +14,7 @@ let sequenceFour = [];
 
 let doSequence = [];
 
-var TIMEOUT = 1000;
+var TIMEOUT = 200;
 
 let baseUrl = "http://localhost:8080/receive";
 
@@ -35,6 +35,48 @@ let isTrainingClass = {
     isTraining: false,
   },
 };
+
+client = new Paho.MQTT.Client(
+  "vm.visinnovation.id",
+  8083,
+  "web_" + parseInt(Math.random() * 100, 10)
+);
+
+client.onConnectionLost = onConnectionLost;
+client.onMessageArrived = onMessageArrived;
+
+let = options = {
+  useSSL: false,
+  userName: "",
+  password: "",
+  onSuccess: onConnect,
+  onFailure: onFailure,
+};
+
+client.connect(options);
+
+function onConnect() {
+  // Once a connection has been made, make a subscription and send a message.
+  console.log("onConnect");
+  client.subscribe("esp/test");
+  message = new Paho.MQTT.Message(" Hello CloudMQTT");
+  message.destinationName = "esp/test";
+  client.send(message);
+}
+
+function onFailure(e) {
+  console.log(e);
+}
+
+function onConnectionLost(respObject) {
+  if (respObject.errorCode !== 0) {
+    console.log("onConnectionLost: " + respObject.errorMessage);
+  }
+}
+
+function onMessageArrived(msg) {
+  console.log("onMessageArrived" + msg.payloadString);
+}
 
 function timeout(time) {
   return new Promise((r) => {
@@ -174,7 +216,7 @@ async function gotResults(err, result) {
 
         if (result.label) {
           classificationResult = result.label;
-          console.log(classificationResult);
+          // console.log(classificationResult);
           await appendSequence(classificationResult);
           isAllowedPredict = false;
         }
@@ -196,7 +238,7 @@ async function gotResults(err, result) {
         );
       }
     } else {
-      console.log("Sleeping for 1 seconds");
+      // console.log("Sleeping for 1 seconds");
       await timeout(1000);
       isAllowedPredict = true;
     }
@@ -210,19 +252,68 @@ async function gotResults(err, result) {
 async function appendSequence(pose) {
   append(doSequence, pose);
   if (doSequence.length == 2) {
-    console.log("Udah dua nih, saatnya ngecek sequence yang lain");
+    console.log("2 pose, checking sequence");
     let isSequenceOne = compareSequence(doSequence, sequenceOne);
     let isSequenceTwo = compareSequence(doSequence, sequenceTwo);
     let isSequenceThree = compareSequence(doSequence, sequenceThree);
     let isSequenceFour = compareSequence(doSequence, sequenceFour);
     doSequence = [];
-    
+
+    if (isSequenceOne) {
+      message = new Paho.MQTT.Message("1");
+      message.destinationName = "cliot/12345/saklar1";
+      client.send(message);
+
+      message = new Paho.MQTT.Message("0");
+      message.destinationName = "cliot/12345/saklar2";
+      client.send(message);
+      console.log("Sequence One");
+    }
+
+    if (isSequenceTwo) {
+      message = new Paho.MQTT.Message("0");
+      message.destinationName = "cliot/12345/saklar1";
+      client.send(message);
+
+      message = new Paho.MQTT.Message("1");
+      message.destinationName = "cliot/12345/saklar2";
+      client.send(message);
+      console.log("Sequence Two");
+    }
+
+    if (isSequenceThree) {
+      message = new Paho.MQTT.Message("1");
+      message.destinationName = "cliot/12345/saklar1";
+      client.send(message);
+
+      message = new Paho.MQTT.Message("1");
+      message.destinationName = "cliot/12345/saklar2";
+      client.send(message);
+      console.log("Sequence Three");
+    }
+
+    if (isSequenceFour) {
+      message = new Paho.MQTT.Message("0");
+      message.destinationName = "cliot/12345/saklar1";
+      client.send(message);
+
+      message = new Paho.MQTT.Message("0");
+      message.destinationName = "cliot/12345/saklar2";
+      client.send(message);
+      console.log("Sequence Four");
+    }
+
     /** publish to mqtt */
-    await fetch("/publish", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ isSequenceOne, isSequenceTwo, isSequenceThree, isSequenceFour })
-    })
+    // await fetch("/publish", {
+    //   method: "POST",
+    //   headers: { "Content-Type": "application/json" },
+    //   body: JSON.stringify({
+    //     isSequenceOne,
+    //     isSequenceTwo,
+    //     isSequenceThree,
+    //     isSequenceFour,
+    //   }),
+    // });
   }
 }
 
@@ -241,12 +332,11 @@ function saveDataset() {
 }
 // Load dataset to the classifier
 function loadDataset() {
-  knnClassifier.load("./myKNN.json", updateCounts);
+  knnClassifier.load("./myKNN_demo.json", updateCounts);
 }
 
 // Add example
 async function addExample(label) {
-
   // Save Image
   await captureCanvas();
 
@@ -436,17 +526,17 @@ function createBtn(label) {
 async function captureCanvas(filename = "train_canvas.png") {
   var canvas = document.getElementById("defaultCanvas0");
   var base64 = canvas.toDataURL();
-  
+
   await fetch(base64)
-    .then(res => res.blob())
-    .then(blob => {
+    .then((res) => res.blob())
+    .then((blob) => {
       const formData = new FormData();
       const file = new File([blob], filename);
-      formData.append('canvas', file)
+      formData.append("canvas", file);
 
-      return fetch("/upload", { 
-        method: "POST", 
-        body: formData
+      return fetch("/upload", {
+        method: "POST",
+        body: formData,
       });
     });
 }
