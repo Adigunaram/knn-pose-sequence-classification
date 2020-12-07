@@ -206,13 +206,13 @@ async function gotResults(err, result) {
     console.error(err);
   }
 
-  if (result.label) {
+  if (result.label != 'Idle') {
     classificationResult = result.label;
 
     if (isAllowedPredict) {
       if (result.confidencesByLabel) {
         const confidences = result.confidencesByLabel;
-        
+
         previousClassification = classificationResult;
 
         await appendSequence(classificationResult);
@@ -259,6 +259,7 @@ async function appendSequence(pose) {
     let isSequenceThree = compareSequence(doSequence, sequenceThree);
     let isSequenceFour = compareSequence(doSequence, sequenceFour);
     doSequence = [];
+    isAllowedPredict = true;
 
     if (isSequenceOne) {
       message = new Paho.MQTT.Message('1');
