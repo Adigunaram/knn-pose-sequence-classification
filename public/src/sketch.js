@@ -206,7 +206,7 @@ async function gotResults(err, result) {
     console.error(err);
   }
 
-  if (result.label != 'Idle') {
+  if (result.label) {
     classificationResult = result.label;
 
     if (isAllowedPredict) {
@@ -215,7 +215,9 @@ async function gotResults(err, result) {
 
         previousClassification = classificationResult;
 
-        await appendSequence(classificationResult);
+        if (result.label != 'Idle') {
+          await appendSequence(classificationResult);
+        }
         isAllowedPredict = false;
 
         select('#confidenceA').html(
