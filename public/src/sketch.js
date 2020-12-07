@@ -212,16 +212,11 @@ async function gotResults(err, result) {
     if (isAllowedPredict) {
       if (result.confidencesByLabel) {
         const confidences = result.confidencesByLabel;
-        // console.log(confidences);
+        
+        previousClassification = classificationResult;
 
-        if (result.label) {
-          classificationResult = result.label;
-          previousClassification = classificationResult;
-
-          // console.log(classificationResult);
-          await appendSequence(classificationResult);
-          isAllowedPredict = false;
-        }
+        await appendSequence(classificationResult);
+        isAllowedPredict = false;
 
         select('#confidenceA').html(
           `${confidences['A'] ? confidences['A'] * 100 : 0}`
