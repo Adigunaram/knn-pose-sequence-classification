@@ -212,7 +212,9 @@ async function gotResults(err, result) {
 
         previousClassification = classificationResult;
 
-        await appendSequence(classificationResult);
+        if (result.label != "Idle") {
+          await appendSequence(classificationResult);
+        }
 
         isAllowedPredict = false;
 
@@ -250,7 +252,7 @@ async function gotResults(err, result) {
 
 async function appendSequence(pose) {
   append(doSequence, pose);
-  if (doSequence.length == 2) {
+  if (doSequence.length == 1) {
     console.log("2 pose, checking sequence");
     let isSequenceOne = compareSequence(doSequence, sequenceOne);
     let isSequenceTwo = compareSequence(doSequence, sequenceTwo);
