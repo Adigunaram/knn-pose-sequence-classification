@@ -252,7 +252,7 @@ async function gotResults(err, result) {
 
 async function appendSequence(pose) {
   append(doSequence, pose);
-  if (doSequence.length == 1) {
+  if (doSequence.length == 2) {
     console.log("2 pose, checking sequence");
     let isSequenceOne = compareSequence(doSequence, sequenceOne);
     let isSequenceTwo = compareSequence(doSequence, sequenceTwo);
